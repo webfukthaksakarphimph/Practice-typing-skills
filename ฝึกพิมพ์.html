@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Typing Skills</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: url('https://png.pngtree.com/background/20210706/original/pngtree-beautiful-landscape-background-picture-image_120700.jpg') no-repeat center center fixed; /* เปลี่ยน URL นี้ */
+            background-size: cover;
+        }
+        #container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 600px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            transition: background 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #wordList {
+            display: none; /* Hide initially */
+        }
+        #game {
+            display: none; /* Hide initially */
+        }
+        #currentWord {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+            user-select: none;
+        }
+        #inputField {
+            padding: 15px;
+            font-size: 24px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        #timer {
+            font-size: 24px;
+            color: red;
+            margin: 20px 0;
+        }
+        .correct {
+            color: green; /* Color when correct */
+        }
+        #feedback {
+            font-size: 24px;
+            color: green;
+            display: none; /* Hide initially */
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="intro">
+            <h1>Practice Typing Skills</h1>
+            <p>Improve your typing speed and accuracy with this practice tool.</p>
+            <button onclick="showWordList()">Start Practicing</button>
+        </div>
+
+        <div id="wordList">
+            <h2>Select Difficulty Level</h2>
+            <button onclick="setDifficulty(10)">Easy</button>
+            <button onclick="setDifficulty(5)">Medium</button>
+            <button onclick="setDifficulty(2)">Hard</button>
+        </div>
+
+        <div id="game">
+            <h2>Try This Word</h2>
+            <div id="currentWord">hello</div>
+            <input type="text" id="inputField" autofocus />
+            <div id="feedback">Correct!</div>
+            <div id="timer">90</div>
+            <div id="score">Score: 0</div>
+        </div>
+
+        <div id="result" style="display: none;">
+            <h2>Your Score</h2>
+            <div id="finalScore">Score: 0</div>
+            <button onclick="resetToStart()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const wordsEasy = ['apple', 'banana', 'cat', 'dog', 'elephant', 'fish', 'giraffe', 'house', 'igloo', 'juice', 'kite', 'lion', 'monkey', 'nose', 'orange', 'penguin', 'queen', 'rabbit', 'sun', 'tiger', 'umbrella', 'van', 'whale', 'xylophone', 'yacht', 'zebra', 'ant', 'bear', 'car', 'doll', 'egg', 'fan', 'grape', 'hat', 'island', 'jacket', 'key', 'lemon', 'mango', 'nut', 'owl', 'piano', 'quilt', 'rose', 'star', 'table', 'ufo', 'vase', 'water', 'xmas', 'yarn', 'zoo', 'ball', 'cloud', 'drum', 'envelope', 'flower', 'garden', 'hill', 'ice', 'jelly', 'kite', 'lamp', 'mountain', 'net', 'ocean', 'pillow', 'quokka', 'ring', 'sock', 'tree', 'unicorn', 'violet', 'window', 'x-ray', 'yak', 'zinnia', 'arch', 'bridge', 'candle', 'daisy', 'eagle', 'fountain', 'globe', 'heron', 'ink', 'jungle', 'koala', 'lily', 'moth', 'noodle', 'octopus', 'pearl', 'quokka', 'rocket', 'sunflower', 'tulip', 'universe', 'vulture', 'whistle', 'xenon', 'yo-yo', 'zipper', 'apricot', 'biscuit'];
+
+        const wordsMedium = ['example', 'device', 'question', 'answer', 'feature', 'system', 'process', 'function', 'network', 'problem', 'solution', 'data', 'information', 'experience', 'project', 'program', 'design', 'service', 'customer', 'feedback', 'strategy', 'performance', 'development', 'analysis', 'presentation', 'organization', 'management', 'resource', 'operation', 'research', 'evaluation', 'application', 'support', 'technology', 'communication', 'consultation', 'interaction', 'collaboration', 'negotiation', 'innovation', 'investment', 'motivation', 'understanding', 'recommendation', 'implementation', 'documentation', 'relationship', 'database', 'software', 'business', 'marketing', 'customer', 'service', 'operation', 'project', 'collaboration', 'analysis', 'communication', 'evaluation', 'performance', 'development', 'strategy', 'resource', 'feedback', 'information', 'analysis', 'support', 'solution', 'management', 'consultation', 'presentation', 'teamwork', 'leadership', 'vision', 'value', 'connection', 'collaboration', 'motivation', 'implementation', 'strategy', 'project', 'business', 'evaluation', 'communication', 'research', 'organization', 'feedback', 'interaction', 'performance', 'analysis', 'solution', 'relationship', 'service', 'operation', 'development', 'analysis'];
+
+        const wordsHard = ['exponential', 'quintessential', 'metamorphosis', 'kaleidoscope', 'unconventional', 'paradigm', 'juxtaposition', 'perspective', 'counterproductive', 'philosophical', 'interdisciplinary', 'multifaceted', 'synthesis', 'vulnerability', 'enigmatic', 'serendipity', 'ephemeral', 'sustainable', 'transcendence', 'ameliorate', 'ubiquitous', 'exacerbate', 'conundrum', 'quintessential', 'juxtapose', 'idiosyncratic', 'cognizant', 'epiphany', 'altruism', 'metaphor', 'substantiate', 'facilitate', 'synergy', 'anecdotal', 'paradoxical', 'accommodate', 'infrastructure', 'extraterrestrial', 'deconstruct', 'vicarious', 'ephemeral', 'philanthropy', 'innovative', 'entrepreneurial', 'interpersonal', 'catalyst', 'dichotomy', 'rejuvenate', 'extrapolate', 'collaborate', 'tapestry', 'conventional', 'existential', 'benevolence', 'metaphysical', 'conglomerate', 'revolutionary', 'idyllic', 'cognitive', 'meticulous', 'pseudonym', 'idiosyncrasy', 'cryptocurrency', 'interdependent', 'esoteric', 'panacea', 'fortuitous', 'amelioration', 'perspicacious', 'conjecture', 'paradox', 'visceral', 'predicament', 'symbiotic', 'turbulence', 'magnanimous', 'serendipitous', 'contradictory', 'enigmatic', 'epistolary', 'superfluous'];
+
+        let currentWord = '';
+        let score = 0;
+        let timeLeft = 90; // Set initial time to 90 seconds
+        let timerInterval;
+        let speed = 5; // Default speed (Medium)
+
+        function showWordList() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('wordList').style.display = 'block';
+        }
+
+        function setDifficulty(selectedSpeed) {
+            speed = selectedSpeed;
+            document.getElementById('wordList').style.display = 'none';
+            startGame();
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 90; // Reset to 90 seconds
+            document.getElementById('score').innerText = `Score: ${score}`;
+            document.getElementById('inputField').value = '';
+            currentWord = getRandomWord();
+            document.getElementById('currentWord').innerText = currentWord;
+            document.getElementById('timer').innerText = timeLeft;
+            document.getElementById('feedback').style.display = 'none'; // Hide feedback
+            document.getElementById('game').style.display = 'block';
+            startTimer();
+        }
+
+        function getRandomWord() {
+            let wordList = speed === 10 ? wordsEasy : (speed === 5 ? wordsMedium : wordsHard);
+            return wordList[Math.floor(Math.random() * wordList.length)];
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('finalScore').innerText = `Score: ${score}`;
+        }
+
+        document.getElementById('inputField').addEventListener('input', function() {
+            if (this.value === currentWord) {
+                score++;
+                document.getElementById('feedback').style.display = 'block'; // Show feedback
+                document.getElementById('feedback').innerText = 'Correct!';
+                this.classList.add('correct'); // Add correct class
+                this.value = ''; // Clear input
+                currentWord = getRandomWord();
+                document.getElementById('currentWord').innerText = currentWord;
+                document.getElementById('score').innerText = `Score: ${score}`; // Update score
+            } else {
+                document.getElementById('feedback').style.display = 'none'; // Hide feedback
+                this.classList.remove('correct'); // Remove correct class
+            }
+        });
+
+        function resetToStart() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('intro').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
